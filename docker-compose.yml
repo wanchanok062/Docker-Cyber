@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    hostname: my-postgres
+    container_name: tct-32-db
+    environment:
+      POSTGRES_DB: tct-db
+      POSTGRES_USER: wanchanok
+      POSTGRES_PASSWORD: wanchanok2544
+    networks:
+      - tct-cyber-network
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user@domain.com
+      PGADMIN_DEFAULT_PASSWORD: wanchanok2544
+    networks:
+      - tct-cyber-network
+    ports:
+      - "8081:80"
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+  strapi:
+    container_name: strapi
+    image: elestio/strapi-development
+    restart: always
+    environment:
+        DATABASE_CLIENT: postgres
+        DATABASE_HOST: my-postgres
+        DATABASE_PORT: 5432
+        DATABASE_NAME: tct-db
+        DATABASE_USERNAME: wanchanok
+        DATABASE_PASSWORD: wanchanok2544
+        DATABASE_SSL : false 
+    networks:
+      - tct-cyber-network
+    ports:
+        - "1337:1337"
+    volumes:
+        - ./strapi-data:/srv/app # mount an existing strapi project
+    
+networks:
+  tct-cyber-network:
+    external: true
